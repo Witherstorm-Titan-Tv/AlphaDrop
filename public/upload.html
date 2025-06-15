@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AlphaDrop - Upload</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      max-width: 500px;
+      margin: auto;
+      padding: 1rem;
+      text-align: center;
+    }
+    input[type="file"] {
+      margin-top: 1rem;
+    }
+    button {
+      padding: 10px 20px;
+      margin-top: 1rem;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    #link {
+      margin-top: 20px;
+      word-wrap: break-word;
+    }
+  </style>
+</head>
+<body>
+  <h2>📤 AlphaDrop</h2>
+  <p>Select an MP4 video under 100MB to upload:</p>
+  <form id="uploadForm">
+    <input type="file" name="video" accept="video/mp4" required />
+    <br />
+    <button type="submit">Upload</button>
+  </form>
+  <div id="link"></div>
+
+  <script>
+    const form = document.getElementById('uploadForm');
+    const linkDiv = document.getElementById('link');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(form);
+      linkDiv.innerHTML = "Uploading...";
+
+      try {
+        const response = await fetch('/upload', {
+          method: 'POST',
+          body: formData
+        });
+
+        const result = await response.json();
+        if (result.videoUrl) {
+          linkDiv.innerHTML = `<p>✅ Uploaded! Share this link:</p><a href="${result.videoUrl}" target="_blank">${result.videoUrl}</a>`;
+        } else {
+          linkDiv.innerHTML = `<p style="color: red;">❌ Upload failed</p>`;
+        }
+      } catch (err) {
+        linkDiv.innerHTML = `<p style="color: red;">❌ Error uploading</p>`;
+      }
+    });
+  </script>
+</body>
+</html>
